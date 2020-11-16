@@ -2,13 +2,39 @@ import React, { Component } from 'react'
 import Heading from "../Reusable/Heading"
 import Img from "gatsby-image"
 
+
+const getCate = items => {
+   let holdItems = items.map(item => {
+       return item.node.category
+   })
+   let holdCategories = new Set(holdItems)
+   let categories = Array.from(holdCategories)
+   categories = ["all",...categories]
+   return categories
+}
+
 export default class Coursecard extends Component {
 
 constructor(props){
     super(props)
     this.state = {
         courses: props.courses.edges,
-        mycourses: props.courses.edges
+        mycourses: props.courses.edges,
+        mycategories: getCate(props.courses.edges)
+    }
+}
+
+cateClicked = category => {
+    let keepItsafe = [...this.state.courses]
+    if(category === "all"){
+        this.setState(() => {
+            return {mycourses: keepItsafe}
+        })
+    }else{
+        let holdMe = keepItsafe.filter(({node}) => node.category === category)
+        this.setState(() => {
+            return {mycourses: holdMe}
+        })
     }
 }
 
@@ -17,7 +43,22 @@ constructor(props){
             <section className="py-5">
                 <div class="container">
                     <Heading title="Courses"/>
-                    <div class="row">
+                    <div className="row my-3">
+                        <div class="col-10 mx-auto text-center">
+                            {
+                                this.state.mycategories.map((category,index) => {
+                                    return(
+                                        <button type="button" className="btn btn-info m-3 px-3" key={index} onClick={() => {
+                                            this.cateClicked(category)
+                                        }}>
+                                            {category}
+                                        </button>
+                                    )
+                                })
+                            }
+                        </div>
+                    </div>
+                    <div className="row">
                         {
                             this.state.mycourses.map(({node}) => {
                                   return (
